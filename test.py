@@ -1,7 +1,6 @@
 import aiohttp
 import asyncio
 import json
-import argparse
 import time
 
 # Replace with your GitHub Personal Access Token
@@ -9,6 +8,9 @@ TOKEN = "your_github_token"
 
 # Replace with your GitHub Organization Name
 ORG_NAME = "your_org_name"
+
+# List of repositories to process
+REPO_LIST = ["repo1", "repo2", "repo3", "..."]  # Add your repos here
 
 # GitHub API endpoints
 GITHUB_API_URL = "https://api.github.com"
@@ -105,12 +107,12 @@ async def get_repo_details(session, repo_name):
     return repo_details
 
 
-async def process_repos(repo_list):
+async def process_repos():
     """Process repositories in parallel with batching."""
     async with aiohttp.ClientSession() as session:
         all_results = []
-        for i in range(0, len(repo_list), BATCH_SIZE):
-            batch = repo_list[i : i + BATCH_SIZE]
+        for i in range(0, len(REPO_LIST), BATCH_SIZE):
+            batch = REPO_LIST[i : i + BATCH_SIZE]
             print(f"🚀 Processing batch {i // BATCH_SIZE + 1} ({len(batch)} repos)...")
             
             tasks = [get_repo_details(session, repo) for repo in batch]
@@ -126,20 +128,8 @@ async def process_repos(repo_list):
 
 
 def main():
-    """Main function to handle optional command-line arguments and process repositories."""
-    parser = argparse.ArgumentParser(description="Fetch GitHub repository details and generate JSON output.")
-    parser.add_argument("repos", nargs="*", help="List of repositories to fetch details for (optional)")
-
-    args = parser.parse_args()
-
-    # Default list of repositories if no argument is passed
-    default_repo_list = [f"repo_{i}" for i in range(1, 401)]  # Simulating 400 repos
-
-    # Use user input if provided, otherwise use default list
-    repo_list = args.repos if args.repos else default_repo_list
-
-    # Run async processing
-    asyncio.run(process_repos(repo_list))
+    """Main function to run async processing."""
+    asyncio.run(process_repos())
 
 
 if __name__ == "__main__":
